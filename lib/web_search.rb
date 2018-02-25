@@ -9,7 +9,16 @@ class WebSearch
 	end
 	
 	def results
-		r = @page.search('.result__snippet')
-		r.collect { |s| s.text }
+		# r = @page.search('.result__snippet')
+		# r.collect { |s| s.text }
+		links = @page.search('a.result__a')
+		r = []
+		links.each do |link|
+			r << {
+				href: @page.links_with(text: link.text)[0].href,
+				text: @page.links_with(text: link.text)[0].text
+			}
+		end
+		r
 	end
 end
