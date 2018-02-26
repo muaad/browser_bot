@@ -1,0 +1,1 @@
+Wolfram.appid = Rails.application.secrets.wolfram_app_id
