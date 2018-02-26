@@ -21,4 +21,26 @@ class WebSearch
 		end
 		r
 	end
+
+	def self.get_page_text url, user
+		redis = Redis.new
+		store = redis.get(url)
+		if store.blank?
+			agent = Mechanize.new
+			page = agent.get(url)
+			text = page.search('p').collect { |p| p.text }.join('\n')
+			msg = text[0]
+			redis.set(url, {paragraphs: text.chars.each_slice(320).map(&:join), users: [{id: user.external_id, slice: 0}]}.to_json)
+		else
+			store = JSON.parse(store)
+			users = store['users']
+			if !users.blank?
+				user = users.find{|h| h['id'] == user.external_id}
+				user['slice'] = user['slice'].to_i + 1
+				msg = store['paragraphs'][user['slice'].to_i + 1]
+			end
+			redis.set(url, {paragraphs: store['paragraphs'], users: users}.to_json)
+		end
+		msg
+	end
 end

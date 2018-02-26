@@ -1,4 +1,5 @@
 require "web_search"
+require "wolfram_alpha"
 require "fb"
 class MessagesController < ApplicationController
 	def fb
@@ -9,7 +10,7 @@ class MessagesController < ApplicationController
 		    sender_id = messaging['sender']['id']
 		    recipient_id = messaging['recipient']['id']
 		    postback = !messaging['postback'].blank?
-		    quick_reply = !messaging['message']['quick_reply'].blank?
+		    quick_reply = !messaging['message'].blank? && !messaging['message']['quick_reply'].blank?
 		    if !postback
 		      if !messaging['message'].blank?
 		        text = messaging['message']['text']
@@ -43,29 +44,74 @@ class MessagesController < ApplicationController
 		        user.name = name
 		        user.save!
 		      end
-		      w = WebSearch.new(text)
-		      logger.info ">>>>>> #{w.results}"
-		      Facebook.send_message(user, 'Here are your search results:')
 
-  	  		items = []
-    			w.results.each do |opt|
-    				btns = [{type: "postback", title: 'Read More', value: opt[:href]}]
-    				items << {title: opt[:text], buttons: btns}
-    			end
-  	  		Facebook.send_message user, '', 'bubbles', items
-	  	  		# items = []
-	  	  		# btns = []
-	  	  		# # [{type: "web_url", title: "Click here", value: "http://spin.im"}, {type: "web_url", title: "Click here", value: "http://spin.im"}]
-	    			# w.results.each do |opt|
-	    			# 	btns << {type: "web_url", title: 'Read More', value: opt['href']}
-	    			# 	items << {title: opt['text'], subtitle: 'subtitle', buttons: btns}
-	    			# end
-		      # 	Facebook.send_message user, '', 'bubbles', items
+		      redis = Redis.new
+		      if postback || quick_reply
+		      	case text
+		      	when '/back'
+		      		msg = 'You have stopped reading the last article. Choose from the following options to proceed'
+		      		items = [{content_type: 'text', title: 'Search The Web', payload: '/search'}, {content_type: 'text', title: 'Ask A Question', payload: '/question'}, {content_type: 'text', title: 'Go To A Web Page', payload: '/url'}]
+		      		Facebook.send_message(user, msg, 'quick_replies', items)
+		      	when '/search'
+		      		redis.set(user.external_id, 'Search')
+		      		msg = 'Tell me what I can search for'
+		      		Facebook.send_message(user, msg)
+		      	when '/question'
+		      		redis.set(user.external_id, 'Question')
+		      		msg = 'What is your question? I will try to find an answer for you. Tip: make it brief and understandable.'
+		      		Facebook.send_message(user, msg)
+		      	when '/url'
+		      		redis.set(user.external_id, 'URL')
+		      		msg = 'Which website do you want to go to? Send it in the correct format. For example, google.com.'
+		      		Facebook.send_message(user, msg)
+		      	else
+		      		msg = WebSearch.get_page_text(text, user)
+		      		items = [{content_type: 'text', title: 'Read More', payload: text}, {content_type: 'text', title: 'Back', payload: '/back'}]
+		      		Facebook.send_message(user, msg, 'quick_replies', items)
+		      	end
+		      else
+		      	step = redis.get(user.external_id)
+		      	if step.blank?
+			      	w = WebSearch.new(text)
+			      	Facebook.send_message(user, 'Here are your search results:')
+	  		  		items = []
+	  	  			w.results.each do |opt|
+	  	  				btns = [{type: "postback", title: 'Read More', value: opt[:href]}]
+	  	  				items << {title: opt[:text], buttons: btns}
+	  	  			end
+	  		  		Facebook.send_message user, '', 'bubbles', items
+		      	else
+		      		case step
+		      		when 'Search'
+				      	w = WebSearch.new(text)
+				      	Facebook.send_message(user, 'Here are your search results:')
+		  		  		items = []
+		  	  			w.results.each do |opt|
+		  	  				btns = [{type: "postback", title: 'Read More', value: opt[:href]}]
+		  	  				items << {title: opt[:text], buttons: btns}
+		  	  			end
+		  		  		Facebook.send_message user, '', 'bubbles', items
+		  		  	when 'Question'
+		  		  		duck = JSON.parse(HTTParty.get("https://api.duckduckgo.com/?q=#{text}&format=json&pretty=1").parsed_response)
+		  		  		if duck['Abstract'].blank?
+		  		  			msg = WolframAlpha.answer(text)
+		  		  		else
+		  		  			msg = duck['Abstract']
+		  		  		end
+		  		  		items = [{content_type: 'text', title: 'Search The Web', payload: '/search'}, {content_type: 'text', title: 'Ask A Question', payload: '/question'}, {content_type: 'text', title: 'Go To A Web Page', payload: '/url'}]
+		  		  		Facebook.send_message(user, msg, 'quick_replies', items)
+		  		  	when 'URL'
+		  		  		text = text.start_with?('http') ? text : "http://#{text}"
+		  		  		msg = WebSearch.get_page_text(text, user)
+		  		  		items = [{content_type: 'text', title: 'Read More', payload: text}, {content_type: 'text', title: 'Back', payload: '/back'}]
+		  		  		Facebook.send_message(user, msg, 'quick_replies', items)
+		      		end
+		      	end
+		      end
 		    end
 		  end
 		end
-
-		render text: 'ok'
+		render json: {status: 200, success: true}
 	end
 
 	def fb_verify
