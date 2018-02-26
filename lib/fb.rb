@@ -1,11 +1,11 @@
 class Facebook
   def self.send_message user, message, type="text", items=[]
     Messenger.configure do |config|
-      config.page_access_token = user.channel.token
+      config.page_access_token = Rails.application.secrets.fb_access_token
     end
     
     if type == "text"
-      HTTParty.post("https://graph.facebook.com/v2.6/me/messages", body: {access_token: user.channel.token, recipient: {id: user.external_id},  message: {text: message}}, debug_output: $stdout)
+      HTTParty.post("https://graph.facebook.com/v2.6/me/messages", body: {access_token: Rails.application.secrets.fb_access_token, recipient: {id: user.external_id},  message: {text: message}}, debug_output: $stdout)
     elsif type == "buttons"
       btns = create_buttons(items, message)
       Messenger::Client.send(Messenger::Request.new(btns, user.external_id))
@@ -124,11 +124,11 @@ class Facebook
   end
 
   def self.send_image user, image_url
-    HTTParty.post("https://graph.facebook.com/v2.6/me/messages", body: {access_token: user.channel.token, recipient: {id: user.external_id},  message: {attachment: {type: "image", payload: {url: image_url}}}}, debug_output: $stdout)
+    HTTParty.post("https://graph.facebook.com/v2.6/me/messages", body: {access_token: Rails.application.secrets.fb_access_token, recipient: {id: user.external_id},  message: {attachment: {type: "image", payload: {url: image_url}}}}, debug_output: $stdout)
   end
 
   def self.profile user
-    HTTParty.get("https://graph.facebook.com/v2.6/#{user.external_id}?fields=first_name,last_name,gender,profile_pic&access_token=#{user.channel.token}")
+    HTTParty.get("https://graph.facebook.com/v2.6/#{user.external_id}?fields=first_name,last_name,gender,profile_pic&access_token=#{Rails.application.secrets.fb_access_token}")
   end
 
   def message_details params
