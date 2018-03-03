@@ -30,7 +30,7 @@ class WebSearch
 			agent = Mechanize.new
 			page = agent.get(url)
 			text = page.search('p').collect { |p| p.text }.join('\n')
-			redis.set(url, {paragraphs: text.chars.each_slice(315).map(&:join), users: [{id: user.external_id, slice: 0}]}.to_json)
+			redis.set(url, {paragraphs: text.chars.each_slice(20000).map(&:join), users: [{id: user.external_id, slice: 0}]}.to_json)
 		end
 
 		store = JSON.parse(redis.get(url))
@@ -38,7 +38,7 @@ class WebSearch
 		if !users.blank?
 			user = users.find{|h| h['id'] == user.external_id}
 			user['slice'] = user['slice'].to_i + 1
-			msg = "#{store['paragraphs'][user['slice'].to_i + 1]} . . ."
+			msg = "#{store['paragraphs'][user['slice'].to_i]} . . ."
 		end
 		redis.set(url, {paragraphs: store['paragraphs'], users: users}.to_json)
 		msg
