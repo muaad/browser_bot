@@ -66,6 +66,10 @@ class MessagesController < ApplicationController
 		      		Facebook.send_message(user, msg)
 		      	when '/start'
 		      		msg = "Hi #{user.name},\n\nWelcome to Browser Bot. I will help you browse the web and find answers to your queries. Please select one of the options below to proceed:"
+		      		items = [{content_type: 'text', title: 'Search The Web', payload: '/search'}, {content_type: 'text', title: 'Ask A Question', payload: '/question'}, {content_type: 'text', title: 'Go To A Web Page', payload: '/url'}, {content_type: 'text', title: 'About', payload: '/about'}]
+		      		Facebook.send_message(user, msg, 'quick_replies', items)
+		      	when '/about'
+		      		msg = "I am a bot that will help you browse the web right from Facebook Messenger. You can do the following: \n\n- Search the web\n- Ask questions and get answers\n- Go to any web page\n\nFor more information, contact my developer at https://twitter.com/MuaadAM."
 		      		items = [{content_type: 'text', title: 'Search The Web', payload: '/search'}, {content_type: 'text', title: 'Ask A Question', payload: '/question'}, {content_type: 'text', title: 'Go To A Web Page', payload: '/url'}]
 		      		Facebook.send_message(user, msg, 'quick_replies', items)
 		      	else
@@ -82,8 +86,10 @@ class MessagesController < ApplicationController
 		      else
 		      	if text == '/start'
 		      		msg = "Hi #{user.name},\n\nWelcome to Browser Bot. I will help you browse the web and find answers to your queries. Please select one of the options below to proceed:"
-		      		items = [{content_type: 'text', title: 'Search The Web', payload: '/search'}, {content_type: 'text', title: 'Ask A Question', payload: '/question'}, {content_type: 'text', title: 'Go To A Web Page', payload: '/url'}]
+		      		items = [{content_type: 'text', title: 'Search The Web', payload: '/search'}, {content_type: 'text', title: 'Ask A Question', payload: '/question'}, {content_type: 'text', title: 'Go To A Web Page', payload: '/url'}, {content_type: 'text', title: 'About', payload: '/about'}]
 		      		Facebook.send_message(user, msg, 'quick_replies', items)
+		      	elsif '/about'
+		      		Facebook.send_message(user, "I am a bot that will help you browse the web right from Facebook Messenger. You can do the following: \n\n- Search the web\n- Ask questions and get answers\n- Go to any web page\n\nFor more information, contact my developer at https://twitter.com/MuaadAM.")
 		      	else
 			      	step = redis.get(user.external_id)
 			      	if step.blank?
