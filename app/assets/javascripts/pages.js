@@ -5,14 +5,14 @@ $(function() {
 		  type: "POST",
 		  url: '/break_strings',
 		  dataType: 'json',
-		  data: {text: $('#stringToBreak').val()},
+		  data: {regex: $('#regex').val(), text: $('#stringToBreak').val()},
 		  success: function(data, textStatus, jqXhr) {
 		  	var h = ''
 		  	for (var i = 0; i < data.strings.length; i++) {
 		  		h += data.strings[i] + '<hr>'
-		  		console.log(h)
 		  	}
 		  	$(".well").html(h)
+		  	console.log(data.counts)
 		  }
 		});
 	})

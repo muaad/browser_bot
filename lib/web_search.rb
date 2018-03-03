@@ -29,7 +29,8 @@ class WebSearch
 			agent = Mechanize.new
 			page = agent.get(url)
 			text = page.search('p').collect { |p| p.text }.join("\n")
-			chunks = text.scan(/(?:((?>.{1,2000}(?:(?<=[^\S\r\n])[^\S\r\n]?|(?=\r?\n)|$|[^\S\r\n]))|.{1,2000})(?:\r?\n)?|(?:\r?\n|$))/).flatten.compact.map(&:strip)
+			# chunks = text.scan(/(?:((?>.{1,2000}(?:(?<=[^\S\r\n])[^\S\r\n]?|(?=\r?\n)|$|[^\S\r\n]))|.{1,2000})(?:\r?\n)?|(?:\r?\n|$))/).flatten.compact.map(&:strip)
+			chunks = text.gsub(/\s+/, ' ').scan(/.{1,1900}(?: |$)/).map(&:strip)
 			msg = "#{chunks[0]} . . ."
 			redis.set(url, {paragraphs: chunks, users: [{id: user.external_id, slice: 1}]}.to_json)
 		else
