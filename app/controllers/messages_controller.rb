@@ -67,7 +67,8 @@ class MessagesController < ApplicationController
 		      	else
 		      		msg = WebSearch.get_page_text(text, user)
 		      		if !msg.blank?
-		      			items = [{content_type: 'text', title: 'Read More', payload: text}, {content_type: 'text', title: 'Back', payload: '/back'}]
+		      			# items = [{content_type: 'text', title: 'Read More', payload: text}, {content_type: 'text', title: 'Back', payload: '/back'}]
+		      			items = [{content_type: 'text', title: 'Search The Web', payload: '/search'}, {content_type: 'text', title: 'Ask A Question', payload: '/question'}, {content_type: 'text', title: 'Go To A Web Page', payload: '/url'}]
 		      			Facebook.send_message(user, msg, 'quick_replies', items)
 		      		else
 		      			msg = 'You have finished reading the article. Choose from the following options to proceed:'

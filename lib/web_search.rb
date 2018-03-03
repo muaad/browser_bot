@@ -46,6 +46,6 @@ class WebSearch
 				redis.set(url, '')
 			end
 		end
-		msg
+		text
 	end
 end
