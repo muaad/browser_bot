@@ -21,9 +21,11 @@ Barred from holding a third term as president, Kibaki stepped down at the end of
   end
 
   def break_text
-  	s = params[:text].gsub(/\s+/, ' ').scan(/.{1,1900}(?: |$)/).map(&:strip)
-  	@counts = s.collect { |e| e.chars.count }
-  	# .scan(Regexp.new(Regexp.escape(params[:regex]))).flatten.compact.map(&:strip)
-  	render json: {strings: s, counts: @counts}
+  	s = params[:text].scan(/(?:((?>.{1,2000}(?:(?<=[^\S\r\n])[^\S\r\n]?|(?=\r?\n)|$|[^\S\r\n]))|.{1,2000})(?:\r?\n)?|(?:\r?\n|$))/).flatten.compact.map(&:strip)
+  	render json: {strings: s}
+  end
+
+  def privacy
+  	
   end
 end
