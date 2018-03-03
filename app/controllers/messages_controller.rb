@@ -64,6 +64,10 @@ class MessagesController < ApplicationController
 		      		redis.set(user.external_id, 'URL')
 		      		msg = 'Which website do you want to go to? Send it in the correct format. For example, google.com.'
 		      		Facebook.send_message(user, msg)
+		      	when '/start'
+		      		msg = "Hi #{user.name},\n\nWelcome to Browser Bot. I will help you browse the web and find answers to your queries. Plesae select one of the options below to proceed:"
+		      		items = [{content_type: 'text', title: 'Search The Web', payload: '/search'}, {content_type: 'text', title: 'Ask A Question', payload: '/question'}, {content_type: 'text', title: 'Go To A Web Page', payload: '/url'}]
+		      		Facebook.send_message(user, msg, 'quick_replies', items)
 		      	else
 		      		msg = WebSearch.get_page_text(text, user)
 		      		if !msg.blank?
