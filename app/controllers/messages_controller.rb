@@ -80,19 +80,13 @@ class MessagesController < ApplicationController
 		      		end
 		      	end
 		      else
-		      	step = redis.get(user.external_id)
-		      	if step.blank?
-			      	w = WebSearch.new(text)
-			      	Facebook.send_message(user, 'Here are your search results:')
-	  		  		items = []
-	  	  			w.results.each do |opt|
-	  	  				btns = [{type: "postback", title: 'Read More', value: opt[:href]}]
-	  	  				items << {title: opt[:text], buttons: btns}
-	  	  			end
-	  		  		Facebook.send_message user, '', 'bubbles', items
+		      	if text == '/start'
+		      		msg = "Hi #{user.name},\n\nWelcome to Browser Bot. I will help you browse the web and find answers to your queries. Please select one of the options below to proceed:"
+		      		items = [{content_type: 'text', title: 'Search The Web', payload: '/search'}, {content_type: 'text', title: 'Ask A Question', payload: '/question'}, {content_type: 'text', title: 'Go To A Web Page', payload: '/url'}]
+		      		Facebook.send_message(user, msg, 'quick_replies', items)
 		      	else
-		      		case step
-		      		when 'Search'
+			      	step = redis.get(user.external_id)
+			      	if step.blank?
 				      	w = WebSearch.new(text)
 				      	Facebook.send_message(user, 'Here are your search results:')
 		  		  		items = []
@@ -101,25 +95,37 @@ class MessagesController < ApplicationController
 		  	  				items << {title: opt[:text], buttons: btns}
 		  	  			end
 		  		  		Facebook.send_message user, '', 'bubbles', items
-		  		  	when 'Question'
-		  		  		duck = JSON.parse(HTTParty.get("https://api.duckduckgo.com/?q=#{text}&format=json&pretty=1").parsed_response)
-		  		  		if duck['Abstract'].blank?
-		  		  			msg = WolframAlpha.answer(text)
-		  		  		else
-		  		  			msg = duck['Abstract']
-		  		  		end
-		  		  		items = [{content_type: 'text', title: 'Search The Web', payload: '/search'}, {content_type: 'text', title: 'Ask A Question', payload: '/question'}, {content_type: 'text', title: 'Go To A Web Page', payload: '/url'}]
-		  		  		Facebook.send_message(user, msg, 'quick_replies', items)
-		  		  	when 'URL'
-				      	w = WebSearch.new(text)
-				      	Facebook.send_message(user, 'Here are web pages that match the URL you sent. Please select the one you intend to navigate to.')
-		  		  		items = []
-		  	  			w.results.each do |opt|
-		  	  				btns = [{type: "postback", title: 'Read More', value: opt[:href]}]
-		  	  				items << {title: opt[:text], buttons: btns}
-		  	  			end
-		  		  		Facebook.send_message user, '', 'bubbles', items
-		      		end
+			      	else
+			      		case step
+			      		when 'Search'
+					      	w = WebSearch.new(text)
+					      	Facebook.send_message(user, 'Here are your search results:')
+			  		  		items = []
+			  	  			w.results.each do |opt|
+			  	  				btns = [{type: "postback", title: 'Read More', value: opt[:href]}]
+			  	  				items << {title: opt[:text], buttons: btns}
+			  	  			end
+			  		  		Facebook.send_message user, '', 'bubbles', items
+			  		  	when 'Question'
+			  		  		duck = JSON.parse(HTTParty.get("https://api.duckduckgo.com/?q=#{text}&format=json&pretty=1").parsed_response)
+			  		  		if duck['Abstract'].blank?
+			  		  			msg = WolframAlpha.answer(text)
+			  		  		else
+			  		  			msg = duck['Abstract']
+			  		  		end
+			  		  		items = [{content_type: 'text', title: 'Search The Web', payload: '/search'}, {content_type: 'text', title: 'Ask A Question', payload: '/question'}, {content_type: 'text', title: 'Go To A Web Page', payload: '/url'}]
+			  		  		Facebook.send_message(user, msg, 'quick_replies', items)
+			  		  	when 'URL'
+					      	w = WebSearch.new(text)
+					      	Facebook.send_message(user, 'Here are web pages that match the URL you sent. Please select the one you intend to navigate to.')
+			  		  		items = []
+			  	  			w.results.each do |opt|
+			  	  				btns = [{type: "postback", title: 'Read More', value: opt[:href]}]
+			  	  				items << {title: opt[:text], buttons: btns}
+			  	  			end
+			  		  		Facebook.send_message user, '', 'bubbles', items
+			      		end
+			      	end
 		      	end
 		      end
 		    end
