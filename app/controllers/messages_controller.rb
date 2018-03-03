@@ -101,10 +101,14 @@ class MessagesController < ApplicationController
 		  		  		items = [{content_type: 'text', title: 'Search The Web', payload: '/search'}, {content_type: 'text', title: 'Ask A Question', payload: '/question'}, {content_type: 'text', title: 'Go To A Web Page', payload: '/url'}]
 		  		  		Facebook.send_message(user, msg, 'quick_replies', items)
 		  		  	when 'URL'
-		  		  		text = text.start_with?('http') ? text : "http://#{text}"
-		  		  		msg = WebSearch.get_page_text(text, user)
-		  		  		items = [{content_type: 'text', title: 'Read More', payload: text}, {content_type: 'text', title: 'Back', payload: '/back'}]
-		  		  		Facebook.send_message(user, msg, 'quick_replies', items)
+				      	w = WebSearch.new(text)
+				      	Facebook.send_message(user, 'Here are web pages that match the URL you sent. Please select the one you intend to navigate to.')
+		  		  		items = []
+		  	  			w.results.each do |opt|
+		  	  				btns = [{type: "postback", title: 'Read More', value: opt[:href]}]
+		  	  				items << {title: opt[:text], buttons: btns}
+		  	  			end
+		  		  		Facebook.send_message user, '', 'bubbles', items
 		      		end
 		      	end
 		      end
