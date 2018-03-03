@@ -37,8 +37,8 @@ class WebSearch
 		users = store['users']
 		if !users.blank?
 			user = users.find{|h| h['id'] == user.external_id}
-			user['slice'] = user['slice'].to_i + 1
 			msg = "#{store['paragraphs'][user['slice'].to_i]} . . ."
+			user['slice'] = user['slice'].to_i + 1
 		end
 		redis.set(url, {paragraphs: store['paragraphs'], users: users}.to_json)
 		msg
