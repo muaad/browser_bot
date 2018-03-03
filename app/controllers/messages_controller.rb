@@ -49,7 +49,7 @@ class MessagesController < ApplicationController
 		      if postback || quick_reply
 		      	case text
 		      	when '/back'
-		      		msg = 'You have stopped reading the last article. Choose from the following options to proceed'
+		      		msg = 'You have stopped reading the last article. Choose from the following options to proceed:'
 		      		items = [{content_type: 'text', title: 'Search The Web', payload: '/search'}, {content_type: 'text', title: 'Ask A Question', payload: '/question'}, {content_type: 'text', title: 'Go To A Web Page', payload: '/url'}]
 		      		Facebook.send_message(user, msg, 'quick_replies', items)
 		      	when '/search'
@@ -66,8 +66,14 @@ class MessagesController < ApplicationController
 		      		Facebook.send_message(user, msg)
 		      	else
 		      		msg = WebSearch.get_page_text(text, user)
-		      		items = [{content_type: 'text', title: 'Read More', payload: text}, {content_type: 'text', title: 'Back', payload: '/back'}]
-		      		Facebook.send_message(user, msg, 'quick_replies', items)
+		      		if !msg.blank?
+		      			items = [{content_type: 'text', title: 'Read More', payload: text}, {content_type: 'text', title: 'Back', payload: '/back'}]
+		      			Facebook.send_message(user, msg, 'quick_replies', items)
+		      		else
+		      			msg = 'You have finished reading the article. Choose from the following options to proceed:'
+		      			items = [{content_type: 'text', title: 'Search The Web', payload: '/search'}, {content_type: 'text', title: 'Ask A Question', payload: '/question'}, {content_type: 'text', title: 'Go To A Web Page', payload: '/url'}]
+		      			Facebook.send_message(user, msg, 'quick_replies', items)
+		      		end
 		      	end
 		      else
 		      	step = redis.get(user.external_id)
