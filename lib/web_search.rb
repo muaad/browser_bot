@@ -43,6 +43,7 @@ class WebSearch
 				redis.set(url, {paragraphs: store['paragraphs'], users: users}.to_json)
 			else
 				msg = ''
+				redis.set(url, '')
 			end
 		end
 		msg
