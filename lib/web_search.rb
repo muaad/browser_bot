@@ -27,19 +27,25 @@ class WebSearch
 		store = redis.get(url)
 		if store.blank?
 			agent = Mechanize.new
-			page = agent.get(url)
-			text = page.search('p').collect { |p| p.text }.join("\n")
-			# chunks = text.scan(/(?:((?>.{1,2000}(?:(?<=[^\S\r\n])[^\S\r\n]?|(?=\r?\n)|$|[^\S\r\n]))|.{1,2000})(?:\r?\n)?|(?:\r?\n|$))/).flatten.compact.map(&:strip)
-			chunks = text.gsub(/\s+/, ' ').scan(/.{1,1900}(?: |$)/).map(&:strip)
-			msg = "#{chunks[0]} . . ."
-			redis.set(url, {paragraphs: chunks, users: [{id: user.external_id, slice: 1}]}.to_json)
+			begin
+				page = agent.get(url)
+				text = page.search('p').collect { |p| p.text }.join("(br)")
+				# chunks = text.scan(/(?:((?>.{1,2000}(?:(?<=[^\S\r\n])[^\S\r\n]?|(?=\r?\n)|$|[^\S\r\n]))|.{1,2000})(?:\r?\n)?|(?:\r?\n|$))/).flatten.compact.map(&:strip)
+				chunks = text.gsub(/\s+/, ' ').scan(/.{1,1900}(?: |$)/).map(&:strip)
+				message = chunks[0].gsub('(br)', "\n\n")
+				msg = "#{message} . . ."
+				redis.set(url, {paragraphs: chunks, users: [{id: user.external_id, slice: 1}]}.to_json)
+			rescue Exception => e
+				msg = "We could not fetch '#{url}'. Sorry."
+			end
 		else
 			store = JSON.parse(store)
 			users = store['users']
 			if !users.blank?
 				user = users.find{|h| h['id'] == user.external_id}
 				if user['slice'].to_i < store['paragraphs'].length && !store['paragraphs'][user['slice'].to_i].blank?
-					msg = "#{store['paragraphs'][user['slice'].to_i]} . . ."
+					message = store['paragraphs'][user['slice'].to_i].gsub('(br)', "\n\n")
+					msg = "#{message} . . ."
 					user['slice'] = user['slice'].to_i + 1
 					redis.set(url, {paragraphs: store['paragraphs'], users: users}.to_json)
 				else
