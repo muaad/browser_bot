@@ -23,8 +23,7 @@ class WebSearch
 	end
 
 	def self.get_page_text url, user
-		redis = Redis.new
-		store = redis.get(url)
+		store = $redis.get(url)
 		if store.blank?
 			agent = Mechanize.new
 			begin
@@ -34,7 +33,7 @@ class WebSearch
 				chunks = text.gsub(/\s+/, ' ').scan(/.{1,1900}(?: |$)/).map(&:strip)
 				message = chunks[0].gsub('(br)', "\n\n")
 				msg = "#{message} . . ."
-				redis.set(url, {paragraphs: chunks, users: [{id: user.external_id, slice: 1}]}.to_json)
+				$redis.set(url, {paragraphs: chunks, users: [{id: user.external_id, slice: 1}]}.to_json)
 			rescue Exception => e
 				msg = "We could not fetch '#{url}'. Sorry."
 			end
@@ -48,10 +47,10 @@ class WebSearch
 						message = store['paragraphs'][user['slice'].to_i].gsub('(br)', "\n\n")
 						msg = "#{message} . . ."
 						user['slice'] = user['slice'].to_i + 1
-						redis.set(url, {paragraphs: store['paragraphs'], users: users}.to_json)
+						$redis.set(url, {paragraphs: store['paragraphs'], users: users}.to_json)
 					else
 						msg = ''
-						redis.set(url, '')
+						$redis.set(url, '')
 					end
 				end
 			rescue Exception => e

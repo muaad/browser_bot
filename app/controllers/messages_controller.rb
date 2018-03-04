@@ -23,14 +23,13 @@ class MessagesController < ApplicationController
 		        user.save!
 		      end
 
-		      redis = Redis.new
 		      if postback || quick_reply
 		      	handle_commands(text, user)
 		      else
 		      	if text.starts_with?('/')
 		      		handle_commands(text, user)
 		      	else
-			      	step = redis.get(user.external_id)
+			      	step = $redis.get(user.external_id)
 			      	if step.blank?
 				      	search_the_web(text, user)
 			      	else
@@ -65,15 +64,15 @@ class MessagesController < ApplicationController
 				items = [{content_type: 'text', title: 'Search The Web', payload: '/search'}, {content_type: 'text', title: 'Ask A Question', payload: '/question'}, {content_type: 'text', title: 'Go To A Web Page', payload: '/url'}]
 				Facebook.send_message(user, msg, 'quick_replies', items)
 			when '/search'
-				redis.set(user.external_id, 'Search')
+				$redis.set(user.external_id, 'Search')
 				msg = 'Tell me what I can search for'
 				Facebook.send_message(user, msg)
 			when '/question'
-				redis.set(user.external_id, 'Question')
+				$redis.set(user.external_id, 'Question')
 				msg = 'What is your question? I will try to find an answer for you. Tip: make it brief and understandable.'
 				Facebook.send_message(user, msg)
 			when '/url'
-				redis.set(user.external_id, 'URL')
+				$redis.set(user.external_id, 'URL')
 				msg = 'Which website do you want to go to? Send it in the correct format. For example, google.com.'
 				Facebook.send_message(user, msg)
 			when '/start'
