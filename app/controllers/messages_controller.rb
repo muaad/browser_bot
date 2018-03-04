@@ -10,6 +10,7 @@ class MessagesController < ApplicationController
 		    sender_id = msg_details[:sender_id]
 		    postback = msg_details[:postback]
 		    quick_reply = msg_details[:quick_reply]
+		    text = msg_details[:text]
 
 		    if page_id == Rails.application.secrets.fb_page_id.to_s
 		      logger.info ">>>>> #{text}"
