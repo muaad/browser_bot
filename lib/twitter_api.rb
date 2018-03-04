@@ -20,11 +20,19 @@ class TwitterApi
 	end
 
 	def tweet t
-		{
-			text: t.full_text,
-			url: fix_url(t.uris[0].display_url),
-			type: t.uris[0].display_url.starts_with?('twitter.com') ? 'Twitter' : 'External'
-		}
+		if t.uris[0].blank?
+			{
+				text: t.full_text,
+				url: '/no_url',
+				type: 'Twitter'
+			}
+		else
+			{
+				text: t.full_text,
+				url: fix_url(t.uris[0].display_url),
+				type: t.uris[0].display_url.starts_with?('twitter.com') ? 'Twitter' : 'External'
+			}
+		end
 	end
 
 	def tweets_hash users
