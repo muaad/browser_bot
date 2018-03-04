@@ -26,7 +26,7 @@ class Command
 		end
 		twitter = TwitterApi.new
 		tweets = twitter.tweets_hash(source).take(10)
-    	Facebook.send_message(user, "Here are the 5 latest #{category} stories making headlines on the #{src}:\n\n")
+    	Facebook.send_message(user, "Here are some of the latest #{category} stories making headlines on the #{src}:\n\n")
   		items = []
 		tweets.each do |tweet|
 			btns = [{type: "postback", title: 'Read More', value: tweet[:url], subtitle: tweet[:url]}]

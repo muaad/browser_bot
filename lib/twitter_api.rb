@@ -13,8 +13,20 @@ class TwitterApi
 		@client.user_timeline(user).reject{|t| t.retweet?}
 	end
 
+	def fix_url url
+		url.starts_with?('http') ? url : "http://#{url}"
+	end
+
+	def tweet t
+		{
+			text: t.full_text,
+			url: fix_url(t.uris[0].display_url),
+			type: t.uris[0].display_url.starts_with?('twitter.com') ? 'Twitter' : 'External'
+		}
+	end
+
 	def tweets_hash user
-		tweets(user).collect { |t| {text: t.full_text, url: t.uris[0].display_url} if !t.uris[0].display_url.starts_with?('twitter.com') }.compact
-		# tweets(user).collect { |t| {text: t.full_text, url: t.uris } }
+		tws = tweets(user).collect { |twt| tweet(twt) }
+		tws.select { |twt| twt[:type] == 'External' }.compact
 	end
 end
