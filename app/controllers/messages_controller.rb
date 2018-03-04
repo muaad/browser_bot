@@ -1,6 +1,7 @@
 require "web_search"
 require "wolfram_alpha"
 require "fb"
+require "command"
 class MessagesController < ApplicationController
 	def fb
 		params['entry'].each do |entry|
@@ -57,11 +58,23 @@ class MessagesController < ApplicationController
 	end
 
 	private
+		def btn_items
+			[
+				{content_type: 'text', title: 'Search The Web', payload: '/search'}, 
+				{content_type: 'text', title: 'Ask A Question', payload: '/question'}, 
+				{content_type: 'text', title: 'Go To A Web Page', payload: '/url'},
+				{content_type: 'text', title: 'News', payload: '/news'},
+				{content_type: 'text', title: 'Jokes', payload: '/jokes'},
+				{content_type: 'text', title: 'Quotes', payload: '/quotes'},
+				{content_type: 'text', title: 'Soccer Stats', payload: '/stats'},
+			]
+		end
+
 		def handle_commands text, user
 			case text
 			when '/back'
 				msg = 'You have stopped reading the last article. Choose from the following options to proceed:'
-				items = [{content_type: 'text', title: 'Search The Web', payload: '/search'}, {content_type: 'text', title: 'Ask A Question', payload: '/question'}, {content_type: 'text', title: 'Go To A Web Page', payload: '/url'}]
+				items = btn_items
 				Facebook.send_message(user, msg, 'quick_replies', items)
 			when '/search'
 				$redis.set(user.external_id, 'Search')
@@ -81,23 +94,54 @@ class MessagesController < ApplicationController
 				Facebook.send_message(user, msg, 'quick_replies', items)
 			when '/about'
 				msg = "I am a bot that will help you browse the web right from Facebook Messenger. You can do the following: \n\n- Search the web\n- Ask questions and get answers\n- Go to any web page\n\nFor more information, contact my developer at https://twitter.com/MuaadAM."
-				items = [{content_type: 'text', title: 'Search The Web', payload: '/search'}, {content_type: 'text', title: 'Ask A Question', payload: '/question'}, {content_type: 'text', title: 'Go To A Web Page', payload: '/url'}]
+				items = btn_items
+				Facebook.send_message(user, msg, 'quick_replies', items)
+			when '/news'
+				msg = "Select the category of news"
+				items = [
+									{
+										content_type: 'text', title: 'International', payload: '/news/international'
+									}, 
+									{
+										content_type: 'text', title: 'Kenya', payload: '/news/local'
+									},
+									{
+										content_type: 'text', title: 'Sports', payload: '/news/sports'
+									},
+									{
+										content_type: 'text', title: 'Tech', payload: '/news/tech'
+									}
+								]
 				Facebook.send_message(user, msg, 'quick_replies', items)
 			else
-				msg = WebSearch.get_page_text(text, user)
-				if !msg.blank?
-					if !msg.starts_with?('We could not fetch')
-						items = [{content_type: 'text', title: 'Read More', payload: text}, {content_type: 'text', title: 'Back', payload: '/back'}]
-						Facebook.send_message(user, msg, 'quick_replies', items)
-					else
-						items = [{content_type: 'text', title: 'Search The Web', payload: '/search'}, {content_type: 'text', title: 'Ask A Question', payload: '/question'}, {content_type: 'text', title: 'Go To A Web Page', payload: '/url'}]
-						Facebook.send_message(user, msg, 'quick_replies', items)
-					end
+				if text.starts_with?('/news/')
+					Command.news(user, text)
+				elsif text.starts_with?('/jokes/')
+					Command.jokes(user, text)
+				elsif text.starts_with?('/quotes/')
+					Command.quotes(user, text)
+				elsif text.starts_with?('/stats/')
+					Command.stats(user, text)
 				else
-					msg = 'You have finished reading the article. Choose from the following options to proceed:'
-					items = [{content_type: 'text', title: 'Search The Web', payload: '/search'}, {content_type: 'text', title: 'Ask A Question', payload: '/question'}, {content_type: 'text', title: 'Go To A Web Page', payload: '/url'}]
+					read_web_page(text, user)
+				end
+			end
+		end
+
+		def read_web_page text, user
+			msg = WebSearch.get_page_text(text, user)
+			if !msg.blank?
+				if !msg.starts_with?('We could not fetch')
+					items = [{content_type: 'text', title: 'Read More', payload: text}, {content_type: 'text', title: 'Back', payload: '/back'}]
+					Facebook.send_message(user, msg, 'quick_replies', items)
+				else
+					items = btn_items
 					Facebook.send_message(user, msg, 'quick_replies', items)
 				end
+			else
+				msg = 'You have finished reading the article. Choose from the following options to proceed:'
+				items = btn_items
+				Facebook.send_message(user, msg, 'quick_replies', items)
 			end
 		end
 
@@ -108,7 +152,7 @@ class MessagesController < ApplicationController
 			else
 				msg = duck['Abstract']
 			end
-			items = [{content_type: 'text', title: 'Search The Web', payload: '/search'}, {content_type: 'text', title: 'Ask A Question', payload: '/question'}, {content_type: 'text', title: 'Go To A Web Page', payload: '/url'}]
+			items = btn_items
 			Facebook.send_message(user, msg, 'quick_replies', items)
 		end
 
@@ -117,7 +161,7 @@ class MessagesController < ApplicationController
     	Facebook.send_message(user, 'Here are web pages that match the URL you sent. Please select the one you intend to navigate to.')
   		items = []
 			w.results.each do |opt|
-				btns = [{type: "postback", title: 'Read More', value: opt[:href]}]
+				btns = [{type: "postback", title: 'Read More', value: opt[:href], subtitle: opt[:href]}]
 				items << {title: opt[:text], buttons: btns}
 			end
   		Facebook.send_message user, '', 'bubbles', items
@@ -128,7 +172,7 @@ class MessagesController < ApplicationController
     	Facebook.send_message(user, 'Here are your search results:')
   		items = []
 			w.results.each do |opt|
-				btns = [{type: "postback", title: 'Read More', value: opt[:href]}]
+				btns = [{type: "postback", title: 'Read More', value: opt[:href], subtitle: opt[:href]}]
 				items << {title: opt[:text], buttons: btns}
 			end
   		Facebook.send_message user, '', 'bubbles', items
