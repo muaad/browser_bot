@@ -38,19 +38,19 @@ class Command
 	def self.jokes user, text
 		twitter = TwitterApi.new
 		joke = (twitter.tweets("best_jokes") + twitter.tweets("badjokecat")).sample.text
-		Facebook.send_message(user, joke)
+		Facebook.send_message(user, joke, 'quick_replies', btn_items)
 	end
 
 	def self.quotes user, text
 		twitter = TwitterApi.new
 		quote = (twitter.tweets("quotes4ursoul") + twitter.tweets("inspowerminds")).sample.text
-		Facebook.send_message(user, quote)
+		Facebook.send_message(user, quote, 'quick_replies', btn_items)
 	end
 
 	def self.stats user, text
 		twitter = TwitterApi.new
 		stat = twitter.tweets("optajoe").sample.text
-		Facebook.send_message(user, stat)
+		Facebook.send_message(user, stat, 'quick_replies', btn_items)
 	end
 
 	def self.command_params message
@@ -66,5 +66,17 @@ class Command
 			p = elements[1..-1].join('/')
 		end
 		p
+	end
+
+	def self.btn_items
+		[
+			{content_type: 'text', title: 'Search The Web', payload: '/search'}, 
+			{content_type: 'text', title: 'Ask A Question', payload: '/question'}, 
+			{content_type: 'text', title: 'Go To A Web Page', payload: '/url'},
+			{content_type: 'text', title: 'News', payload: '/news'},
+			{content_type: 'text', title: 'Jokes', payload: '/jokes'},
+			{content_type: 'text', title: 'Quotes', payload: '/quotes'},
+			{content_type: 'text', title: 'Soccer Stats', payload: '/stats'},
+		]
 	end
 end
