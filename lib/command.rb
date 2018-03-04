@@ -37,19 +37,19 @@ class Command
 
 	def self.jokes user, text
 		twitter = TwitterApi.new
-		joke = (twitter.tweets(["best_jokes", "badjokecat"])).sample.text
+		joke = (twitter.tweets(["best_jokes", "badjokecat"])).sample.full_text
 		Facebook.send_message(user, joke, 'quick_replies', btn_items)
 	end
 
 	def self.quotes user, text
 		twitter = TwitterApi.new
-		quote = (twitter.tweets(["quotes4ursoul", "inspowerminds"])).sample.text
+		quote = (twitter.tweets(["quotes4ursoul", "inspowerminds"])).sample.full_text
 		Facebook.send_message(user, quote, 'quick_replies', btn_items)
 	end
 
 	def self.stats user, text
 		twitter = TwitterApi.new
-		stat = twitter.tweets(["optajoe"]).sample.text
+		stat = twitter.tweets(["optajoe"]).sample.full_text
 		Facebook.send_message(user, stat, 'quick_replies', btn_items)
 	end
 
