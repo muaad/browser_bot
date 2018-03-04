@@ -116,11 +116,11 @@ class MessagesController < ApplicationController
 			else
 				if text.starts_with?('/news/')
 					Command.news(user, text)
-				elsif text.starts_with?('/jokes/')
+				elsif text.starts_with?('/jokes')
 					Command.jokes(user, text)
-				elsif text.starts_with?('/quotes/')
+				elsif text.starts_with?('/quotes')
 					Command.quotes(user, text)
-				elsif text.starts_with?('/stats/')
+				elsif text.starts_with?('/stats')
 					Command.stats(user, text)
 				else
 					read_web_page(text, user)
