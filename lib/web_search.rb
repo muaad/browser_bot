@@ -39,19 +39,23 @@ class WebSearch
 				msg = "We could not fetch '#{url}'. Sorry."
 			end
 		else
-			store = JSON.parse(store)
-			users = store['users']
-			if !users.blank?
-				user = users.find{|h| h['id'] == user.external_id}
-				if user['slice'].to_i < store['paragraphs'].length && !store['paragraphs'][user['slice'].to_i].blank?
-					message = store['paragraphs'][user['slice'].to_i].gsub('(br)', "\n\n")
-					msg = "#{message} . . ."
-					user['slice'] = user['slice'].to_i + 1
-					redis.set(url, {paragraphs: store['paragraphs'], users: users}.to_json)
-				else
-					msg = ''
-					redis.set(url, '')
+			begin
+				store = JSON.parse(store)
+				users = store['users']
+				if !users.blank?
+					user = users.find{|h| h['id'] == user.external_id}
+					if user['slice'].to_i < store['paragraphs'].length && !store['paragraphs'][user['slice'].to_i].blank?
+						message = store['paragraphs'][user['slice'].to_i].gsub('(br)', "\n\n")
+						msg = "#{message} . . ."
+						user['slice'] = user['slice'].to_i + 1
+						redis.set(url, {paragraphs: store['paragraphs'], users: users}.to_json)
+					else
+						msg = ''
+						redis.set(url, '')
+					end
 				end
+			rescue Exception => e
+				msg = "We could not fetch '#{url}'. Sorry."
 			end
 		end
 		msg

@@ -5,34 +5,11 @@ class MessagesController < ApplicationController
 	def fb
 		params['entry'].each do |entry|
 		  page_id = entry['id']
-		  logger.info "Handing update for page #{page_id}"
 		  entry['messaging'].each do |messaging|
-		    sender_id = messaging['sender']['id']
-		    recipient_id = messaging['recipient']['id']
-		    postback = !messaging['postback'].blank?
-		    quick_reply = !messaging['message'].blank? && !messaging['message']['quick_reply'].blank?
-		    if !postback
-		      if !messaging['message'].blank?
-		        text = messaging['message']['text']
-		        notification_type = "MessageReceived"
-		        if !messaging['message']['attachments'].blank?
-		          if messaging['message']['attachments'][0]['type'] == "image"
-		            notification_type = "ImageReceived"
-		            image_url = messaging['message']['attachments'][0]['payload']['url']
-		          elsif messaging['message']['attachments'][0]['type'] == "location"
-		            notification_type = "LocationReceived"
-		            location = messaging['message']['attachments'][0]
-		          end
-		        end
-		      end
-		    else
-		      text = messaging['postback']['payload']
-		      notification_type = "MessageReceived"
-		    end
-
-		    if quick_reply
-		      text = messaging['message']['quick_reply']['payload']
-		    end
+		  	msg_details = Facebook.message_details(messaging)
+		    sender_id = msg_details[:sender_id]
+		    postback = msg_details[:postback]
+		    quick_reply = msg_details[:quick_reply]
 
 		    if page_id == Rails.application.secrets.fb_page_id.to_s
 		      logger.info ">>>>> #{text}"
@@ -47,89 +24,22 @@ class MessagesController < ApplicationController
 
 		      redis = Redis.new
 		      if postback || quick_reply
-		      	case text
-		      	when '/back'
-		      		msg = 'You have stopped reading the last article. Choose from the following options to proceed:'
-		      		items = [{content_type: 'text', title: 'Search The Web', payload: '/search'}, {content_type: 'text', title: 'Ask A Question', payload: '/question'}, {content_type: 'text', title: 'Go To A Web Page', payload: '/url'}]
-		      		Facebook.send_message(user, msg, 'quick_replies', items)
-		      	when '/search'
-		      		redis.set(user.external_id, 'Search')
-		      		msg = 'Tell me what I can search for'
-		      		Facebook.send_message(user, msg)
-		      	when '/question'
-		      		redis.set(user.external_id, 'Question')
-		      		msg = 'What is your question? I will try to find an answer for you. Tip: make it brief and understandable.'
-		      		Facebook.send_message(user, msg)
-		      	when '/url'
-		      		redis.set(user.external_id, 'URL')
-		      		msg = 'Which website do you want to go to? Send it in the correct format. For example, google.com.'
-		      		Facebook.send_message(user, msg)
-		      	when '/start'
-		      		msg = "Hi #{user.name},\n\nWelcome to Browser Bot. I will help you browse the web and find answers to your queries. Please select one of the options below to proceed:"
-		      		items = [{content_type: 'text', title: 'Search The Web', payload: '/search'}, {content_type: 'text', title: 'Ask A Question', payload: '/question'}, {content_type: 'text', title: 'Go To A Web Page', payload: '/url'}, {content_type: 'text', title: 'About', payload: '/about'}]
-		      		Facebook.send_message(user, msg, 'quick_replies', items)
-		      	when '/about'
-		      		msg = "I am a bot that will help you browse the web right from Facebook Messenger. You can do the following: \n\n- Search the web\n- Ask questions and get answers\n- Go to any web page\n\nFor more information, contact my developer at https://twitter.com/MuaadAM."
-		      		items = [{content_type: 'text', title: 'Search The Web', payload: '/search'}, {content_type: 'text', title: 'Ask A Question', payload: '/question'}, {content_type: 'text', title: 'Go To A Web Page', payload: '/url'}]
-		      		Facebook.send_message(user, msg, 'quick_replies', items)
-		      	else
-		      		msg = WebSearch.get_page_text(text, user)
-		      		if !msg.blank?
-		      			items = [{content_type: 'text', title: 'Read More', payload: text}, {content_type: 'text', title: 'Back', payload: '/back'}]
-		      			Facebook.send_message(user, msg, 'quick_replies', items)
-		      		else
-		      			msg = 'You have finished reading the article. Choose from the following options to proceed:'
-		      			items = [{content_type: 'text', title: 'Search The Web', payload: '/search'}, {content_type: 'text', title: 'Ask A Question', payload: '/question'}, {content_type: 'text', title: 'Go To A Web Page', payload: '/url'}]
-		      			Facebook.send_message(user, msg, 'quick_replies', items)
-		      		end
-		      	end
+		      	handle_commands(text, user)
 		      else
-		      	if text == '/start'
-		      		msg = "Hi #{user.name},\n\nWelcome to Browser Bot. I will help you browse the web and find answers to your queries. Please select one of the options below to proceed:"
-		      		items = [{content_type: 'text', title: 'Search The Web', payload: '/search'}, {content_type: 'text', title: 'Ask A Question', payload: '/question'}, {content_type: 'text', title: 'Go To A Web Page', payload: '/url'}, {content_type: 'text', title: 'About', payload: '/about'}]
-		      		Facebook.send_message(user, msg, 'quick_replies', items)
-		      	elsif text == '/about'
-		      		Facebook.send_message(user, "I am a bot that will help you browse the web right from Facebook Messenger. You can do the following: \n\n- Search the web\n- Ask questions and get answers\n- Go to any web page\n\nFor more information, contact my developer at https://twitter.com/MuaadAM.")
+		      	if text.starts_with?('/')
+		      		handle_commands(text, user)
 		      	else
 			      	step = redis.get(user.external_id)
 			      	if step.blank?
-				      	w = WebSearch.new(text)
-				      	Facebook.send_message(user, 'Here are your search results:')
-		  		  		items = []
-		  	  			w.results.each do |opt|
-		  	  				btns = [{type: "postback", title: 'Read More', value: opt[:href]}]
-		  	  				items << {title: opt[:text], buttons: btns}
-		  	  			end
-		  		  		Facebook.send_message user, '', 'bubbles', items
+				      	search_the_web(text, user)
 			      	else
 			      		case step
 			      		when 'Search'
-					      	w = WebSearch.new(text)
-					      	Facebook.send_message(user, 'Here are your search results:')
-			  		  		items = []
-			  	  			w.results.each do |opt|
-			  	  				btns = [{type: "postback", title: 'Read More', value: opt[:href]}]
-			  	  				items << {title: opt[:text], buttons: btns}
-			  	  			end
-			  		  		Facebook.send_message user, '', 'bubbles', items
+					      	search_the_web(text, user)
 			  		  	when 'Question'
-			  		  		duck = JSON.parse(HTTParty.get("https://api.duckduckgo.com/?q=#{text}&format=json&pretty=1").parsed_response)
-			  		  		if duck['Abstract'].blank?
-			  		  			msg = WolframAlpha.answer(text)
-			  		  		else
-			  		  			msg = duck['Abstract']
-			  		  		end
-			  		  		items = [{content_type: 'text', title: 'Search The Web', payload: '/search'}, {content_type: 'text', title: 'Ask A Question', payload: '/question'}, {content_type: 'text', title: 'Go To A Web Page', payload: '/url'}]
-			  		  		Facebook.send_message(user, msg, 'quick_replies', items)
+			  		  		answer_question(text, user)
 			  		  	when 'URL'
-					      	w = WebSearch.new(text)
-					      	Facebook.send_message(user, 'Here are web pages that match the URL you sent. Please select the one you intend to navigate to.')
-			  		  		items = []
-			  	  			w.results.each do |opt|
-			  	  				btns = [{type: "postback", title: 'Read More', value: opt[:href]}]
-			  	  				items << {title: opt[:text], buttons: btns}
-			  	  			end
-			  		  		Facebook.send_message user, '', 'bubbles', items
+					      	go_to_url(text, user)
 			      		end
 			      	end
 		      	end
@@ -145,4 +55,82 @@ class MessagesController < ApplicationController
 			render plain: params["hub.challenge"]
 		end
 	end
+
+	private
+		def handle_commands text, user
+			case text
+			when '/back'
+				msg = 'You have stopped reading the last article. Choose from the following options to proceed:'
+				items = [{content_type: 'text', title: 'Search The Web', payload: '/search'}, {content_type: 'text', title: 'Ask A Question', payload: '/question'}, {content_type: 'text', title: 'Go To A Web Page', payload: '/url'}]
+				Facebook.send_message(user, msg, 'quick_replies', items)
+			when '/search'
+				redis.set(user.external_id, 'Search')
+				msg = 'Tell me what I can search for'
+				Facebook.send_message(user, msg)
+			when '/question'
+				redis.set(user.external_id, 'Question')
+				msg = 'What is your question? I will try to find an answer for you. Tip: make it brief and understandable.'
+				Facebook.send_message(user, msg)
+			when '/url'
+				redis.set(user.external_id, 'URL')
+				msg = 'Which website do you want to go to? Send it in the correct format. For example, google.com.'
+				Facebook.send_message(user, msg)
+			when '/start'
+				msg = "Hi #{user.name},\n\nWelcome to Browser Bot. I will help you browse the web and find answers to your queries. Please select one of the options below to proceed:"
+				items = [{content_type: 'text', title: 'Search The Web', payload: '/search'}, {content_type: 'text', title: 'Ask A Question', payload: '/question'}, {content_type: 'text', title: 'Go To A Web Page', payload: '/url'}, {content_type: 'text', title: 'About', payload: '/about'}]
+				Facebook.send_message(user, msg, 'quick_replies', items)
+			when '/about'
+				msg = "I am a bot that will help you browse the web right from Facebook Messenger. You can do the following: \n\n- Search the web\n- Ask questions and get answers\n- Go to any web page\n\nFor more information, contact my developer at https://twitter.com/MuaadAM."
+				items = [{content_type: 'text', title: 'Search The Web', payload: '/search'}, {content_type: 'text', title: 'Ask A Question', payload: '/question'}, {content_type: 'text', title: 'Go To A Web Page', payload: '/url'}]
+				Facebook.send_message(user, msg, 'quick_replies', items)
+			else
+				msg = WebSearch.get_page_text(text, user)
+				if !msg.blank?
+					if !msg.starts_with?('We could not fetch')
+						items = [{content_type: 'text', title: 'Read More', payload: text}, {content_type: 'text', title: 'Back', payload: '/back'}]
+						Facebook.send_message(user, msg, 'quick_replies', items)
+					else
+						items = [{content_type: 'text', title: 'Search The Web', payload: '/search'}, {content_type: 'text', title: 'Ask A Question', payload: '/question'}, {content_type: 'text', title: 'Go To A Web Page', payload: '/url'}]
+						Facebook.send_message(user, msg, 'quick_replies', items)
+					end
+				else
+					msg = 'You have finished reading the article. Choose from the following options to proceed:'
+					items = [{content_type: 'text', title: 'Search The Web', payload: '/search'}, {content_type: 'text', title: 'Ask A Question', payload: '/question'}, {content_type: 'text', title: 'Go To A Web Page', payload: '/url'}]
+					Facebook.send_message(user, msg, 'quick_replies', items)
+				end
+			end
+		end
+
+		def answer_question text, user
+			duck = JSON.parse(HTTParty.get("https://api.duckduckgo.com/?q=#{text}&format=json&pretty=1").parsed_response)
+			if duck['Abstract'].blank?
+				msg = WolframAlpha.answer(text)
+			else
+				msg = duck['Abstract']
+			end
+			items = [{content_type: 'text', title: 'Search The Web', payload: '/search'}, {content_type: 'text', title: 'Ask A Question', payload: '/question'}, {content_type: 'text', title: 'Go To A Web Page', payload: '/url'}]
+			Facebook.send_message(user, msg, 'quick_replies', items)
+		end
+
+		def go_to_url text, user
+    	w = WebSearch.new(text)
+    	Facebook.send_message(user, 'Here are web pages that match the URL you sent. Please select the one you intend to navigate to.')
+  		items = []
+			w.results.each do |opt|
+				btns = [{type: "postback", title: 'Read More', value: opt[:href]}]
+				items << {title: opt[:text], buttons: btns}
+			end
+  		Facebook.send_message user, '', 'bubbles', items
+		end
+
+		def search_the_web text, user
+    	w = WebSearch.new(text)
+    	Facebook.send_message(user, 'Here are your search results:')
+  		items = []
+			w.results.each do |opt|
+				btns = [{type: "postback", title: 'Read More', value: opt[:href]}]
+				items << {title: opt[:text], buttons: btns}
+			end
+  		Facebook.send_message user, '', 'bubbles', items
+		end
 end

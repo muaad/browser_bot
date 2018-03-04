@@ -131,9 +131,33 @@ class Facebook
     HTTParty.get("https://graph.facebook.com/v2.6/#{user.external_id}?fields=first_name,last_name,gender,profile_pic&access_token=#{Rails.application.secrets.fb_access_token}")
   end
 
-  def message_details params
-    sender_id = params['entry'][0]['messaging'][0]['sender']['id']
-    message = params['entry'][0]['messaging'][0]['message']['text']
-    {sender_id: sender_id, message: message}
+  def self.message_details messaging
+    sender_id = messaging['sender']['id']
+    recipient_id = messaging['recipient']['id']
+    postback = !messaging['postback'].blank?
+    quick_reply = !messaging['message'].blank? && !messaging['message']['quick_reply'].blank?
+    if !postback
+      if !messaging['message'].blank?
+        text = messaging['message']['text']
+        notification_type = "MessageReceived"
+        if !messaging['message']['attachments'].blank?
+          if messaging['message']['attachments'][0]['type'] == "image"
+            notification_type = "ImageReceived"
+            image_url = messaging['message']['attachments'][0]['payload']['url']
+          elsif messaging['message']['attachments'][0]['type'] == "location"
+            notification_type = "LocationReceived"
+            location = messaging['message']['attachments'][0]
+          end
+        end
+      end
+    else
+      text = messaging['postback']['payload']
+      notification_type = "MessageReceived"
+    end
+
+    if quick_reply
+      text = messaging['message']['quick_reply']['payload']
+    end
+    {postback: postback, quick_reply: quick_reply, notification_type: notification_type, image_url: image_url, text: text, sender_id: sender_id}
   end
 end
