@@ -10,7 +10,7 @@ class WolframAlpha
 		begin
 			msg = ans[0]
 		rescue Exception => e
-			logger.info "Short answer >>>> #{e}"
+			puts "Short answer >>>> #{e}"
 			msg = long_answer(result)
 		end
 		msg.blank? ? "Sorry. I didn't understand that question. :( May be you misspelt something. Come again please." : msg
@@ -20,7 +20,7 @@ class WolframAlpha
 		begin
 			msg = result[:pods].values[1][0]
 		rescue Exception => e
-			logger.info "Long answer >>>> #{e}"
+			puts "Long answer >>>> #{e}"
 			msg = result[:pods].values.join('\n\n')
 		end
 		msg

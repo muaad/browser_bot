@@ -1,8 +1,31 @@
 <div class="container" style="padding-top: 50px">
 	<form>
 		<div class="form-group">
-			<label for="regex">Put your regex here:</label>
-			<input type="text" class="form-control" name="regex">
+			<label>Criteria:</label>
+			<div class="well">
+				<blockquote>
+					Given any long string, split it into chunks that satisfy the following conditions:
+					<ol>
+						<li>Must have a maximum character count of 2000</li>
+						<li>Must have a minimum character count of just under 2000</li>
+						<li>No word should be split</li>
+						<li>White space has to be preserved</li>
+					</ol>
+				</blockquote>
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="regex">Different Solutions Suggested by StackOverflow Users</label>
+			<select class="form-control" id="solutions">
+				<option>Select Solution</option>
+				<option value="1">@StefanPochmann's Suggestion</option>
+				<option value="2">@StefanPochmann's Suggestion - modified to maintain line breaks</option>
+				<option value="3">@sln's Suggestion</option>
+				<option value="4">@Cary Swoveland's Suggestion</option>
+			</select>
+		</div>
+		<div class="form-group">
+			<div class="well" id="solution"></div>
 		</div>
 		<legend>
 			<div class="form-group">
@@ -14,7 +37,9 @@
 			</div>
 		</legend>
 	</form>
-	<%= @counts %>
 	<h3>Broken up text</h3>
+	<div class="well">
+		<p>The lengths of each chunk: <span id="counts"></span></p>
+	</div>
 	<div class="well" id="results"></div>
 </div>

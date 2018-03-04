@@ -21,11 +21,37 @@ Barred from holding a third term as president, Kibaki stepped down at the end of
   end
 
   def break_text
-  	s = params[:text].scan(/(?:((?>.{1,2000}(?:(?<=[^\S\r\n])[^\S\r\n]?|(?=\r?\n)|$|[^\S\r\n]))|.{1,2000})(?:\r?\n)?|(?:\r?\n|$))/).flatten.compact.map(&:strip)
-  	render json: {strings: s}
+  	case params[:solution]
+  	when '1'
+  		chunks = params[:text].gsub(/\s+/, ' ').scan(/.{1,2000}(?: |$)/).map(&:strip)
+  	when '2'
+  		text = params[:text].gsub("\n", "(br)")
+  		chunks = text.gsub(/s+/, ' ').scan(/.{1,2000}(?: |$)/).map(&:strip)
+  		chunks.each{|chunk| chunk.gsub!('(br)', "\n")}
+  	when '3'
+  		chunks = params[:text].scan(/(?:((?>.{1,32}(?:(?<=[^\S\r\n])[^\S\r\n]?|(?=\r?\n)|$|[^\S\r\n]))|.{1,32})(?:\r?\n)?|(?:\r?\n|$))/).flatten.compact.map(&:strip)
+  	when '4'
+  		chunks = max_groups(params[:text], 2000)
+  	end
+  	render json: { strings: chunks, counts: chunks.count }
   end
 
   def privacy
   	
   end
+
+  private
+  	def max_groups(str, n)
+  	  arr = []
+  	  pos = 0     
+  	  loop do
+  	    break (arr << str[pos..-1]) if str.size - pos <= n
+  	    m = str.match(/.{#{n}}(?=[ ])|.{,#{n-1}}[ ]/, pos)
+  	    return nil if m.nil?
+  	    arr << m[0]
+  	    pos += m[0].size
+  	  end
+  	end
+
+
 end
