@@ -2,31 +2,31 @@ require "fb"
 require "twitter_api"
 class Command
 	def self.news user, text
-		source = "dailynation"
+		sources = ["dailynation", "standardkenya", "citizentvkenya"]
 		src = "Daily Nation"
 		category = "local"
 		if command_params(text)
 			if command_params(text) == "tech"
-				source = "nytimestech"
+				sources = ["nytimestech", "bbctech", "venturebeat", "techcrunch"]
 				src = "New York Times"
 				category = "technology"
 			elsif command_params(text) == "sport" || command_params(text) == "sports"
-				source = "bbcsport"
+				sources = ["bbcsport", "skysports"]
 				src = "BBC"
 				category = "sports"
 			elsif command_params(text) == "international"
-				source = "AJEnglish"
+				sources = ["AJEnglish", "bbc", "nyt", "cnn"]
 				src = "Al Jazeera"
 				category = "international news"
 			elsif command_params(text).downcase == "somali" || command_params(text).downcase == "somalia"
-				source = "BBCSomali"
+				sources = ["BBCSomali"]
 				src = "BBC Somali"
 				category = "Somali news"
 			end
 		end
 		twitter = TwitterApi.new
-		tweets = twitter.tweets_hash(source).take(10)
-    	Facebook.send_message(user, "Here are some of the latest #{category} stories making headlines on the #{src}:\n\n")
+		tweets = twitter.tweets_hash(sources).take(10)
+    	Facebook.send_message(user, "Here are some of the latest #{category} stories making headlines on the web:\n\n")
   		items = []
 		tweets.each do |tweet|
 			btns = [{type: "postback", title: 'Read More', value: tweet[:url], subtitle: tweet[:url]}]

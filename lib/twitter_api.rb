@@ -9,8 +9,10 @@ class TwitterApi
 		end
 	end
 
-	def tweets user
-		@client.user_timeline(user).reject{|t| t.retweet?}
+	def tweets users
+		ts = []
+		users.each { |u| ts << @client.user_timeline(u).reject{|t| t.retweet?} }
+		ts.flatten.compact
 	end
 
 	def fix_url url
@@ -25,8 +27,8 @@ class TwitterApi
 		}
 	end
 
-	def tweets_hash user
-		tws = tweets(user).collect { |twt| tweet(twt) }
+	def tweets_hash users
+		tws = tweets(users).collect { |twt| tweet(twt) }
 		tws.select { |twt| twt[:type] == 'External' }.compact
 	end
 end
