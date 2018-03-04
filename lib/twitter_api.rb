@@ -14,6 +14,7 @@ class TwitterApi
 	end
 
 	def tweets_hash user
-		tweets(user).collect { |t| {text: t.text, url: URI.extract(t.text).last} }
+		tweets(user).collect { |t| {text: t.full_text, url: t.uris[0].display_url} if !t.uris[0].display_url.starts_with?('twitter.com') }.compact
+		# tweets(user).collect { |t| {text: t.full_text, url: t.uris } }
 	end
 end
