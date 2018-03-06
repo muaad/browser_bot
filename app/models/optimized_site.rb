@@ -38,11 +38,11 @@ class OptimizedSite < ApplicationRecord
 
 	def self.stack_overflow page
 		text = ''
-		text += page.search('.question-hyperlink').first.try(:text)
+		text += "*#{page.search('.question-hyperlink').first.try(:text)}*(br)"
 		divs = page.search('.post-text')
 		q = divs.shift
-		text += "*Question:*(br)#{q.try(:text)}(br)*Answers:*(br)"
-		divs.collect { |p| text += p.text }.join("(br)")
+		text += "#{q.try(:text).gsub('\n', '(br)')}(br)*Answers:*(br)"
+		divs.collect { |p| text += p.text.gsub('\n', '(br)') }.join("(br)")
 		text
 	end
 end
