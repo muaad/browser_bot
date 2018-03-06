@@ -1,0 +1,35 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Optimized Sites</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Root url</th>
+      <th>Action</th>
+      <th>Enabled</th>
+      <th>Implementation</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @optimized_sites.each do |optimized_site| %>
+      <tr>
+        <td><%= optimized_site.name %></td>
+        <td><%= optimized_site.root_url %></td>
+        <td><%= optimized_site.action %></td>
+        <td><%= optimized_site.enabled %></td>
+        <td><%= optimized_site.implementation %></td>
+        <td><%= link_to 'Show', optimized_site %></td>
+        <td><%= link_to 'Edit', edit_optimized_site_path(optimized_site) %></td>
+        <td><%= link_to 'Destroy', optimized_site, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Optimized Site', new_optimized_site_path %>

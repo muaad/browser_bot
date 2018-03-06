@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  name: MyString
+  root_url: MyString
+  action: MyString
+  enabled: false
+  implementation: MyString
+
+two:
+  name: MyString
+  root_url: MyString
+  action: MyString
+  enabled: false
+  implementation: MyString

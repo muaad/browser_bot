@@ -1,0 +1,29 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Name:</strong>
+  <%= @optimized_site.name %>
+</p>
+
+<p>
+  <strong>Root url:</strong>
+  <%= @optimized_site.root_url %>
+</p>
+
+<p>
+  <strong>Action:</strong>
+  <%= @optimized_site.action %>
+</p>
+
+<p>
+  <strong>Enabled:</strong>
+  <%= @optimized_site.enabled %>
+</p>
+
+<p>
+  <strong>Implementation:</strong>
+  <%= @optimized_site.implementation %>
+</p>
+
+<%= link_to 'Edit', edit_optimized_site_path(@optimized_site) %> |
+<%= link_to 'Back', optimized_sites_path %>

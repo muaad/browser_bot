@@ -1,0 +1,42 @@
+<%= form_for(optimized_site) do |f| %>
+  <% if optimized_site.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(optimized_site.errors.count, "error") %> prohibited this optimized_site from being saved:</h2>
+
+      <ul>
+      <% optimized_site.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :name %>
+    <%= f.text_field :name %>
+  </div>
+
+  <div class="field">
+    <%= f.label :root_url %>
+    <%= f.text_field :root_url %>
+  </div>
+
+  <div class="field">
+    <%= f.label :action %>
+    <%= f.text_field :action %>
+  </div>
+
+  <div class="field">
+    <%= f.label :enabled %>
+    <%= f.check_box :enabled %>
+  </div>
+
+  <div class="field">
+    <%= f.label :implementation %>
+    <%= f.text_field :implementation %>
+  </div>
+
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

@@ -1,0 +1,2 @@
+module OptimizedSitesHelper
+end

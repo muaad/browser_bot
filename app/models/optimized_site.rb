@@ -1,0 +1,2 @@
+class OptimizedSite < ApplicationRecord
+end

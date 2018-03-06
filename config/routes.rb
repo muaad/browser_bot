@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :optimized_sites
   get 'pages/index'
 
   get 'pages/string_test'

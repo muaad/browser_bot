@@ -10,7 +10,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180226112550) do
+ActiveRecord::Schema.define(version: 20180306122459) do
+
+  create_table "optimized_sites", force: :cascade do |t|
+    t.string   "name"
+    t.string   "root_url"
+    t.string   "action"
+    t.boolean  "enabled",        default: false
+    t.string   "implementation", default: "Internal"
+    t.datetime "created_at",                          null: false
+    t.datetime "updated_at",                          null: false
+  end
 
   create_table "users", force: :cascade do |t|
     t.string   "name"
