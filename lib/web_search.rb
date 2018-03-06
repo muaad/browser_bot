@@ -28,8 +28,7 @@ class WebSearch
 			agent = Mechanize.new
 			begin
 				page = agent.get(url)
-				text = page.search('p').collect { |p| p.text }.join("(br)")
-				# chunks = text.scan(/(?:((?>.{1,2000}(?:(?<=[^\S\r\n])[^\S\r\n]?|(?=\r?\n)|$|[^\S\r\n]))|.{1,2000})(?:\r?\n)?|(?:\r?\n|$))/).flatten.compact.map(&:strip)
+				text = OptimizedSite.optimized?(url) ? OptimizedSite.optimize(url, page) : page.search('p').collect { |p| p.text }.join("(br)")
 				chunks = text.gsub(/\s+/, ' ').scan(/.{1,1900}(?: |$)/).map(&:strip)
 				message = chunks[0].gsub('(br)', "\n\n")
 				msg = "#{message} . . ."
