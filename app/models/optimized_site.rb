@@ -42,7 +42,7 @@ class OptimizedSite < ApplicationRecord
 		divs = page.search('.post-text')
 		q = divs.shift
 		text += "#{q.try(:text).gsub('\n', '(br)')}(br)*Answers:*(br)"
-		divs.collect { |p| text += p.text.gsub('\n', '(br)') }.join("(br)")
+		divs.collect { |p| text += p.text.gsub('\n', '(br)') }.join("__________________________ (br)")
 		text
 	end
 end
