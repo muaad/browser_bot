@@ -161,7 +161,7 @@ class MessagesController < ApplicationController
     	Facebook.send_message(user, 'Here are web pages that match the URL you sent. Please select the one you intend to navigate to.')
   		items = []
 			w.results.each do |opt|
-				btns = [{type: "postback", title: 'Read More', value: opt[:href], subtitle: opt[:href]}]
+				btns = [{type: "postback", title: 'Read More', value: opt[:href]}, {type: "web_url", title: 'View Web Page', value: opt[:href]}]
 				items << {title: opt[:text], buttons: btns}
 			end
   		Facebook.send_message user, '', 'bubbles', items
@@ -172,7 +172,7 @@ class MessagesController < ApplicationController
     	Facebook.send_message(user, 'Here are your search results:')
   		items = []
 			w.results.each do |opt|
-				btns = [{type: "postback", title: 'Read More', value: opt[:href], subtitle: opt[:href]}]
+				btns = [{type: "postback", title: 'Read More', value: opt[:href]}, {type: "web_url", title: 'View Web Page', value: opt[:href]}]
 				items << {title: opt[:text], buttons: btns}
 			end
   		Facebook.send_message user, '', 'bubbles', items
