@@ -29,7 +29,7 @@ class Command
     	Facebook.send_message(user, "Here are some of the latest #{category} stories making headlines on the web:\n\n")
   		items = []
 		tweets.each do |tweet|
-			btns = [{type: "postback", title: 'Read More', value: tweet[:url], subtitle: tweet[:url]}]
+			btns = [{type: "postback", title: 'Read More', value: tweet[:url], subtitle: tweet[:url]}, {type: "web_url", title: 'View Web Page', value: tweet[:url]}]
 			items << {title: tweet[:text], buttons: btns}
 		end
   		Facebook.send_message user, '', 'bubbles', items
