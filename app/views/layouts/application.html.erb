@@ -9,6 +9,7 @@
   <link href="//fonts.googleapis.com/css?family=Montserrat:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i&amp;subset=latin-ext,vietnamese" rel="stylesheet">
 </head>
 <body>
+  <!-- Facebook Chat Plugin -->
   <script>
     window.fbAsyncInit = function() {
       FB.init({
@@ -18,7 +19,6 @@
         version          : 'v2.12'
       });
     };
-
     (function(d, s, id){
        var js, fjs = d.getElementsByTagName(s)[0];
        if (d.getElementById(id)) {return;}
@@ -27,6 +27,13 @@
        fjs.parentNode.insertBefore(js, fjs);
      }(document, 'script', 'facebook-jssdk'));
   </script>
+  <div class="fb-customerchat"
+    page_id="389192321508619"
+    logged_in_greeting="Welcome to Browser Bot. I will help you browse the web & find answers for you."
+    logged_out_greeting="Welcome to Browser Bot. I will help you browse the web & find answers for you."
+  >
+  </div>
+  <!-- Facebook Chat Plugin -->
 
   <!-- header -->
   <div class="header" id="home">
@@ -119,15 +126,6 @@
         Built by <a href="www.muaad.me" style="font-weight: bold; color: #4A82BE;">Muaad Abdirahman</a>. Find me on Twitter at: <a href="https://twitter.com/MuaadAM" style="font-weight: bold; color: #4A82BE;">@MuaadAM</a>. 
       </div>
     </div>
-  </div>
-
-  <!-- Facebook Messenger Chat Plugin -->
-  <div class="fb-customerchat"
-   page_id=<%= Rails.application.secrets.fb_app_id %>
-   ref="<OPTIONAL_WEBHOOK_PARAM>"
-   theme_color="#4A82BE"
-   logged_in_greeting="Hi. Welcome to Browser Bot. I will help you browse the web and find answers to your queries."
-   logged_out_greeting="Login to Facebook in order to browse the web on this bot.">
   </div>
 </body>
 </html>
