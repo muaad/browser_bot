@@ -228,11 +228,11 @@ ul.forms_right li {
 }
 
 .navbar-default a.navbar-brand h1 .fa {
-  color: #ed1b2e;
+  color: #4781C0;
   margin-right: 3px;
 }
 .navbar-default .navbar-nav>li>a {
-  color: #282828;
+  color: #4781C0;
   letter-spacing: 1px;
   font-weight: 600;
   text-transform: uppercase;
@@ -243,20 +243,20 @@ ul.forms_right li {
 
 .navbar-nav>li>a.active {
   color: #ffffff;
-  background: #ed1b2e;
+  background: #4781C0;
 }
 
 .navbar-default .navbar-nav>.open>a,
 .navbar-default .navbar-nav>.open>a:hover,
 .navbar-default .navbar-nav>.open>a:focus {
   color: #fff;
-  background: #ed1b2e;
+  background: #4781C0;
 }
 
 .navbar-default .navbar-nav>li>a:hover,
 .navbar-default .navbar-nav>li>a:focus {
   color: #fff;
-  background: #ed1b2e;
+  background: #4781C0;
 }
 
 .navbar-default .navbar-brand label {
@@ -296,7 +296,7 @@ ul.forms_right li {
   padding: 9px 10px;
   margin-top: 8px;
   margin-bottom: 8px;
-  background-color: #282828;
+  background-color: #4781C0;
   background-image: none;
   border: 1px solid transparent;
   border-radius: 0;
@@ -365,7 +365,7 @@ ul.dropdown-menu:hover a.s-menu {
 
 .dropdown-menu li a {
   padding: 12px 15px;
-    color: #282828;
+    color: #4781C0;
     letter-spacing: 1px;
     font-weight: 600;
     text-transform: uppercase;
@@ -392,7 +392,7 @@ ul.dropdown-menu:hover a.s-menu {
 .dropdown-menu>li>a:focus {
     color: #fff;
     text-decoration: none;
-    background-color: #ed1b2e;
+    background-color: #4781C0;
 }
 
 .multi-column-dropdown li a:hover {
@@ -474,8 +474,8 @@ b.fa.fa-caret-right {
 .carousel-indicators .active {
     width: 14px;
     height: 14px;
-    border: 1px solid #ed1b2e;
-    background-color: #ed1b2e;
+    border: 1px solid #4781C0;
+    background-color: #4781C0;
 }
 .codes {
   padding: 5em 0;
@@ -578,7 +578,7 @@ b.fa.fa-caret-right {
   left: 0;
   right: 0;
   bottom: 0;
-  background: #ed1b2e;
+  background: #4781C0;
   -webkit-transform: scaleX(0);
   transform: scaleX(0);
   -webkit-transform-origin: 0 50%;
@@ -669,7 +669,7 @@ h3.agileits-title{
 }
 #video {
   position: relative;
-  background: #ed1b2e;
+  background: #4781C0;
   width: 100%;
   margin:0px auto;
 }
@@ -885,7 +885,7 @@ h3.heading {
 
 /*-- subscribe --*/
 .subscribe{
-    background: #ed1b2e;
+    background: #4781C0;
   padding: 4em 0;
 }
 .subscribe h3.heading {
@@ -1159,7 +1159,7 @@ ul.wmuSliderPagination {
   -ms-border-radius: 50px;
 }
 .wmuSliderPagination a.wmuActive {
-  background: #ed1b2e;
+  background: #4781C0;
     box-shadow: 0px 0px 10px #3D99DC;
   -webkit-box-shadow: 0px 0px 10px #3D99DC;
   -moz-box-shadow: 0px 0px 10px #3D99DC;
@@ -1225,7 +1225,7 @@ ul.agile_footer_grid_list li span{
 .right li span.fa {
     float : none;
     font-size: 14px;
-    color: #ed1b2e;
+    color: #4781C0;
     padding-right: 1em;
 }
 .w3_agile_footer_grid h3 {
@@ -1241,7 +1241,7 @@ ul.agile_footer_grid_list li span{
   color:#999;
 }
 .agileits_w3layouts_footer_grid_list li span{ 
-    color: #ed1b2e;
+    color: #4781C0;
   padding-right:1em;
 }
 .agileits_w3layouts_footer_grid_list li a{
@@ -1355,7 +1355,7 @@ ul.agile_footer_grid_list li span{
     font-size: 15px;
 }
 .agileinfo_copyright p a{ 
-  color:#ed1b2e;
+  color:#4781C0;
   text-decoration:none;
 }
 .agileinfo_copyright p a:hover{ 
@@ -1793,7 +1793,7 @@ ul.agile_footer_grid_list li span{
   }
   .navbar-default .navbar-nav .open .dropdown-menu > li > a:hover, .navbar-default .navbar-nav .open .dropdown-menu > li > a:focus {
     color: #fff;
-    background-color: #ed1b2e;
+    background-color: #4781C0;
   }
   div#bs-example-navbar-collapse-1 {
     position: absolute;
