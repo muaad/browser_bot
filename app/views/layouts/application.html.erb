@@ -1,21 +1,133 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>BrowserBot</title>
-    <%= csrf_meta_tags %>
+<head>
+  <title>Browser Bot - Free Conversational Internet Browsing Bot</title>
+  <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track' => 'reload' %>
+  <%= javascript_include_tag 'application', 'data-turbolinks-track' => 'reload' %>
+  <link href="/logo.ico" rel="shortcut icon" type="image/x-icon">
+  <link href="//fonts.googleapis.com/css?family=Open+Sans:400,600,700" rel="stylesheet" type="text/css">
+  <link href="//fonts.googleapis.com/css?family=Montserrat:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i&amp;subset=latin-ext,vietnamese" rel="stylesheet">
+</head>
+<body>
+  <script>
+    window.fbAsyncInit = function() {
+      FB.init({
+        appId            : <%= Rails.application.secrets.fb_app_id %>,
+        autoLogAppEvents : true,
+        xfbml            : true,
+        version          : 'v2.12'
+      });
+    };
 
-    <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload' %>
-    <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    (function(d, s, id){
+       var js, fjs = d.getElementsByTagName(s)[0];
+       if (d.getElementById(id)) {return;}
+       js = d.createElement(s); js.id = id;
+       js.src = "https://connect.facebook.net/en_US/sdk.js";
+       fjs.parentNode.insertBefore(js, fjs);
+     }(document, 'script', 'facebook-jssdk'));
+  </script>
 
-    <!-- Optional theme -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+  <!-- header -->
+  <div class="header" id="home">
+    <div class="content white">
+      <nav class="navbar navbar-default" role="navigation">
+        <div class="container">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+            <a class="navbar-brand" href="index.html">
+              <h1>Browser Bot</h1>
+            </a>
+          </div>
+          <!--/.navbar-header-->
+          <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <nav>
+              <ul class="nav navbar-nav">
+                <li><a href="#about">About</a></li>
+                <li><a href="#why">Internet.org</a></li>
+                <li><a href="#">Demo</a></li>
+              </ul>
+            </nav>
+          </div>
+          <!--/.navbar-collapse-->
+          <!--/.navbar-->
+        </div>
+      </nav>
+    </div>
+  </div>
+  <!-- //header -->
 
-    <!-- Latest compiled and minified JavaScript -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-  </head>
+  <!-- banner slider -->
+  <div id="myCarousel" class="carousel slide" data-ride="carousel">
+    <div class="carousel-inner" role="listbox">
+      <div class="item active">
+        <div class="container">
+          <div class="carousel-caption">
+            
+            <div class="clearfix"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- //banner slider -->
 
-  <body>
-    <%= yield %>
-  </body>
+<!-- welcome -->
+<div id="about" class="welcome"> 
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12 welcome_left">
+        <h3 class="agileits-title">What is Browser Bot?</h3>
+        <p>Browser Bot is a Facebook Messenger bot that lets users browse the web in a conversational way. Search for anything on the web and get the top ten results, read any article, ask any questions and get the right answers, go to any web page by sending the URL, get the most recent news headlines in a number of categories like international news, local news, sports news, technology news and so on, get quotes, jokes, soccer stats and so on. We have also optimized some websites to make them easily readable in Messenger.</p>   
+      </div>
+    </div> 
+    <div class="clearfix"> </div>
+  </div> 
+</div>
+<div id="why">
+  <div class="container" style="color: white;">
+    <div class="wthree_head_section">
+      <h3 class="agileits-title" style="color: white;">Why I created this bot</h3>
+    </div>
+    <p>
+      I created this bot because I recently started using <b>Airtel Kenya</b> for my internet needs and I found that they don't charge for data usage when using Facebook Messenger so I thought why not create a bot that will let me just browse the web in a conversational way from Facebook Messenger without incurring any internet usage expenses?
+    </p>
+    <br>
+    <hr>
+    <br>
+    <div class="wthree_head_section">
+      <h3 class="agileits-title" style="color: white;">Internet.org/Facebook Free Basics</h3>
+    </div>
+    <p>
+      Facebook has partnered with a number of mobile network providers around the world to provide free internet access for users when they access certain services like Facebook Messenger and a few others under their Free Basics program. According to Facebook: <br><br><blockquote class="center-justified">The goal of this initiative is to bring internet access and the benefits of connectivity to the portion of the world that doesn't have them</blockquote><br><br>
+      <span class="center-justified">
+        This will let people experience the internet and will hopefully eventually come online. Facebook's Free Basics, in my opinion, is a great initiative. The only issue is that it is limited in the number of services people can access from it. This bot will greatly expand the number of services available through this program, albeit indirectly. Anyone using the internet service of a moblie network provider that is part of this initiative will be able to browse the web for free by searching for anything and reading almost any web page on the internet.
+      </span>
+    </p>
+  </div>
+</div>
+
+<!-- footer -->
+  <div class="footer">
+    <div class="container">
+      <div class="text-center">
+        Built by <a href="www.muaad.me" style="font-weight: bold; color: #4A82BE;">Muaad Abdirahman</a>. Find me on Twitter at: <a href="https://twitter.com/MuaadAM" style="font-weight: bold; color: #4A82BE;">@MuaadAM</a>. 
+      </div>
+    </div>
+  </div>
+
+  <!-- Facebook Messenger Chat Plugin -->
+  <div class="fb-customerchat"
+   page_id=<%= Rails.application.secrets.fb_app_id %>
+   ref="<OPTIONAL_WEBHOOK_PARAM>"
+   theme_color="#4A82BE"
+   logged_in_greeting="Hi. Use this bot to browse the web."
+   logged_out_greeting="Login to Facebook in order to browse the web on this bot.">
+  </div>
+</body>
 </html>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180306122459) do
+ActiveRecord::Schema.define(version: 20180306122952) do
 
   create_table "optimized_sites", force: :cascade do |t|
     t.string   "name"
