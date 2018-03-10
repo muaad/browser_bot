@@ -47,7 +47,7 @@
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-            <a class="navbar-brand" href="index.html">
+            <a class="navbar-brand" href="/">
               <h1>Browser Bot</h1>
             </a>
           </div>
@@ -57,7 +57,6 @@
               <ul class="nav navbar-nav">
                 <li><a href="#about">About</a></li>
                 <li><a href="#why">Internet.org</a></li>
-                <li><a href="#">Demo</a></li>
               </ul>
             </nav>
           </div>
@@ -69,71 +68,13 @@
   </div>
   <!-- //header -->
 
-  <!-- banner slider -->
-  <div id="myCarousel" class="carousel slide" data-ride="carousel">
-    <div class="carousel-inner" role="listbox">
-      <div class="item active">
-        <div class="container">
-          <div class="carousel-caption">
-            
-            <div class="clearfix"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <!-- //banner slider -->
-
-<!-- welcome -->
-<div id="about" class="welcome"> 
-  <div class="container">
-    <div class="row">
-      <div class="col-md-12 welcome_left">
-        <h3 class="agileits-title">What is Browser Bot?</h3>
-        <p>Browser Bot is a Facebook Messenger bot that lets users browse the web in a conversational way. Search for anything on the web and get the top ten results, read any article, ask any questions and get the right answers, go to any web page by sending the URL, get the most recent news headlines in a number of categories like international news, local news, sports news, technology news and so on, get quotes, jokes, soccer stats and so on. We have also optimized some websites to make them easily readable in Messenger.</p>
-        <br>
-        <div class="text-center">
-          <div class="fb-messengermessageus" 
-            messenger_app_id=<%= Rails.application.secrets.fb_app_id %> 
-            page_id="389192321508619"
-            color="<blue | white>"
-            size="<standard | large | xlarge>">
-          </div>
-        </div>
-        <br>
-      </div>
-    </div> 
-    <div class="clearfix"> </div>
-  </div> 
-</div>
-<div id="why">
-  <div class="container" style="color: white;">
-    <div class="wthree_head_section">
-      <h3 class="agileits-title" style="color: white;">Why I created this bot</h3>
-    </div>
-    <p>
-      I created this bot because I recently started using <b>Airtel Kenya</b> for my internet needs and I found that they don't charge for data usage when using Facebook Messenger so I thought why not create a bot that will let me just browse the web in a conversational way from Facebook Messenger without incurring any internet usage expenses?
-    </p>
-    <br>
-    <hr>
-    <br>
-    <div class="wthree_head_section">
-      <h3 class="agileits-title" style="color: white;">Internet.org/Facebook Free Basics</h3>
-    </div>
-    <p>
-      Facebook has partnered with a number of mobile network providers around the world to provide free internet access for users when they access certain services like Facebook Messenger and a few others under their Free Basics program. According to Facebook: <br><br><blockquote class="center-justified">The goal of this initiative is to bring internet access and the benefits of connectivity to the portion of the world that doesn't have them</blockquote><br><br>
-      <span class="center-justified">
-        This will let people experience the internet and will hopefully eventually come online. Facebook's Free Basics, in my opinion, is a great initiative. The only issue is that it is limited in the number of services people can access from it. This bot will greatly expand the number of services available through this program, albeit indirectly. Anyone using the internet service of a moblie network provider that is part of this initiative will be able to browse the web for free by searching for anything and reading almost any web page on the internet.
-      </span>
-    </p>
-  </div>
-</div>
+  <%= yield %>
 
 <!-- footer -->
   <div class="footer">
     <div class="container">
       <div class="text-center">
-        Built by <a href="www.muaad.me" style="font-weight: bold; color: #4A82BE;">Muaad Abdirahman</a>. Find me on Twitter at: <a href="https://twitter.com/MuaadAM" style="font-weight: bold; color: #4A82BE;">@MuaadAM</a>. 
+        Built by <a href="www.muaad.me" style="font-weight: bold; color: #4A82BE;">Muaad Abdirahman</a>. Find me on Twitter at: <a href="https://twitter.com/MuaadAM" style="font-weight: bold; color: #4A82BE;">@MuaadAM</a>. | <a href="/privacy" style="font-weight: bold; color: #4A82BE;">Privacy Policy</a>
       </div>
     </div>
   </div>
